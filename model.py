@@ -62,9 +62,9 @@ class SimpleCLS(nn.Module):
                       bias=True)
         )
 
-        if self.phase == 'train':
+        if self.phase == 'test':
             self.softmax = nn.Softmax(dim=-1)
-        elif self.phase == 'test':
+        elif self.phase == 'train':
             for m in self.backbone.children():
                 if isinstance(m, nn.Conv2d):
                     nn.init.xavier_normal_(m.weight.data)
