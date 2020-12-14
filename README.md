@@ -4,7 +4,7 @@ For Course CS205 'C/C++ Program Design' at Southern University of Scicence and T
 ## Model Information
 The model is trained to perform face classification (face or background).
 
-Detailed definition: [model.py](./model.py). Visualization: [netron](https://netron.app/?url=https://raw.githubusercontent.com/ShiqiYu/SimpleCNNbyCPP/main/weights/face_binary_cls.onnx).
+Detailed definition: [model.py](./model.py). Visualization: [netron](https://netron.app/?url=https://raw.githubusercontent.com/ShiqiYu/SimpleCNNbyCPP/main/weights/face_binary_cls.onnx) (***NOTE***: you need an extra softmax layer in the end of the pipepline to output scores in the range [0.0, 1.0]).
 
 More about `face_binary_cls.cpp`:
 - This file is ported from `face_binary_cls.pth` using `port2cpp` defined in [model.py](./model.py#L123-L203).
@@ -15,17 +15,21 @@ More about `face_binary_cls.cpp`:
 - Note that the parameters of batch normalization is already combined to convolutional layers' when porting weights (`.pth`) to `.cpp`.
 
 ## Examples of locating weights by indexing
-A convolutional layer (conv) is defined as `[out_channels, in_channels, kernel_size_h, kernel_size_w]`. It takes a tensor of shape `[in_channels, in_h, in_w]` as input, and ouputs a tensor of shape `[out_channels, out_h, out_w]`. Example of locating weights and bias for kernel at `out_channels=o, in_channels=i`:
+A convolutional layer (conv) is defined as `[out_channels, in_channels, kernel_size_h, kernel_size_w]`. It takes a tensor of shape `[in_channels, in_h, in_w]` as input, and ouputs a tensor of shape `[out_channels, out_h, out_w]`. Example of locating weights and bias for a 3x3 kernel at `out_channels=o, in_channels=i`:
 ```cpp
-// weights
-// first row of the kernel
-float kernel_oi_00 = conv0_weight[o*(i*k*k) + i*(k*k) + 0];
-float kernel_oi_01 = conv0_weight[o*(i*k*k) + i*(k*k) + 1];
-float kernel_oi_02 = conv0_weight[o*(i*k*k) + i*(k*k) + 2];
-// and more rows ...
+for (int o = 0; o < out_channels; ++o) {
+    for (int i = 0; i < in_channels; ++i) {
+        // weights
+        // first row of the kernel
+        float kernel_oi_00 = conv0_weight[o*(in_channels*3*3) + i*(3*3) + 0];
+        float kernel_oi_01 = conv0_weight[o*(in_channels*3*3) + i*(3*3) + 1];
+        float kernel_oi_02 = conv0_weight[o*(in_channels*3*3) + i*(3*3) + 2];
+        // and more rows ...
 
-// bias
-float bias_oi = conv0_bias[o]
+        // bias
+        float bias_oi = conv0_bias[o];
+    }
+}
 ```
 
 A fully connected layer (fc) is defined as `[out_features, in_features]`. It takes a tensor of shape `[N, in_features]` as input, and outputs a tensor of shape `[N, out_features]`. `N` is denoted as batch size, batch size is 1 if there is one image in the input. The calculation of the fully connected layer is matrix multiplication. 
@@ -36,7 +40,21 @@ for (int o = 0; o < out_features; ++o) {
         float w_oi = fc0_weight[o*out_features + i];
         // ...
     }
+    float bias = fc0_bias[o];
 }
+```
+
+## Demo
+
+We provide a demo in [demo.py](./demo.py) using PyTorch and two sample images in [samples](./samples). You can run the demo and get the confidence score as follows:
+```shell
+$ python demo.py --img ./samples/face.jpg
+PyTorch version: 1.6.0.
+Confidence score: 0.9929.
+
+$ python demo.py --img ./samples/bg.jpg 
+PyTorch version: 1.6.0.
+Confidence score: 0.0000.
 ```
 
 # Acknowledgement
