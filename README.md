@@ -50,11 +50,11 @@ We provide a demo in [demo.py](./demo.py) using PyTorch and two sample images in
 ```shell
 $ python demo.py --img ./samples/face.jpg
 PyTorch version: 1.6.0.
-Confidence score: 0.9929.
+bg score: 0.007086, face score: 0.992914.
 
 $ python demo.py --img ./samples/bg.jpg 
 PyTorch version: 1.6.0.
-Confidence score: 0.0000.
+bg score: 0.999996, face score: 0.000004.
 ```
 
 # Acknowledgement

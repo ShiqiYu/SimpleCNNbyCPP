@@ -12,7 +12,6 @@ from model import SimpleCLS
 # init net
 net = SimpleCLS(phase='test')
 net = net.eval()
-# print(net)
 # load weight
 state_dict = torch.load('./weights/face_binary_cls.pth')
 net.load_state_dict(state_dict)
@@ -26,5 +25,5 @@ args = parser.parse_args()
 img = cv2.imread(args.img)
 with torch.no_grad():
     out = net(T.ToTensor()(img).unsqueeze(0))
-    conf_score = out.squeeze(0)[1].data.numpy()
-print('Confidence score: {:.4f}.'.format(conf_score))
+    conf_scores = out.squeeze(0).data.numpy()
+print('bg score: {:.6f}, face score: {:.6f}.'.format(conf_scores[0], conf_scores[1]))
