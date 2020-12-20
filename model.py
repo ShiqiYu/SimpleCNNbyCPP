@@ -49,11 +49,11 @@ class SimpleCLS(nn.Module):
         self.phase = phase.lower()
 
         self.backbone = nn.Sequential(
-            ConvBNReLU(3, 16, 3, 2, 1),    # downsampled by 2, 128 -> 64
-            nn.MaxPool2d(2, 2),            # downsampled by 2, 64 -> 32
-            ConvBNReLU(16, 32, 3, 1),      # keep
-            nn.MaxPool2d(2, 2),            # downsampled by 2, 32 -> 16
-            ConvBNReLU(32, 32, 3, 2, 1)    # downsampled by 2, 16 -> 8
+            ConvBNReLU(3, 16, 3, 2, 1),    # 128 -> 64
+            nn.MaxPool2d(2, 2),            # 64 -> 32
+            ConvBNReLU(16, 32, 3, 1),      # 32 -> 30
+            nn.MaxPool2d(2, 2),            # 30 -> 15
+            ConvBNReLU(32, 32, 3, 2, 1)    # 15 -> 8
         )
 
         self.classifier = nn.Sequential(
