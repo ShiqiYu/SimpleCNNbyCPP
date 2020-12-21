@@ -44,16 +44,14 @@ for (int o = 0; o < out_features; ++o) {
 }
 ```
 
-## Demo
+## Example Output
 
-We provide a demo in [demo.py](./demo.py) using PyTorch and two sample images in [samples](./samples). You can run the demo and get the confidence score as follows:
+We provide a demo to output scores as an example in [demo.py](./demo.py) using PyTorch (>= 1.6.0) and two sample images in [samples](./samples). You can run the demo and get the confidence scores as follows:
 ```shell
 $ python demo.py --img ./samples/face.jpg
-PyTorch version: 1.6.0.
 bg score: 0.007086, face score: 0.992914.
 
 $ python demo.py --img ./samples/bg.jpg 
-PyTorch version: 1.6.0.
 bg score: 0.999996, face score: 0.000004.
 ```
 

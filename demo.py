@@ -6,7 +6,7 @@ import numpy as np
 
 import torch
 import torchvision.transforms as T
-print('PyTorch version: {}.'.format(torch.__version__))
+# print('PyTorch version: {}.'.format(torch.__version__))
 
 from model import SimpleCLS
 # init net
