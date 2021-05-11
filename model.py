@@ -26,14 +26,14 @@ class ConvBNReLU(nn.Module):
         out = self.relu(out)
         return out
 
-    def combine_conv_bn(self):        
+    def combine_conv_bn(self):
         conv_result = nn.Conv2d(self.in_channels,
-                                self.out_channels, 
+                                self.out_channels,
                                 self.kernel_size,
-                                stride=self.stride, 
+                                stride=self.stride,
                                 padding=self.padding,
                                 bias=True)
-        
+
         scales = self.bn.weight / torch.sqrt(self.bn.running_var + self.bn.eps)
         conv_result.bias[:] = (self.conv.bias - self.bn.running_mean) * scales + self.bn.bias
         for ch in range(self.out_channels):
@@ -74,7 +74,7 @@ class SimpleCLS(nn.Module):
                     m.bias.data.zero_()
             for m in self.classifier.children():
                 if isinstance(m, nn.Linear):
-                    nn.init.xavier_uniform(m.weight)
+                    nn.init.xavier_uniform_(m.weight)
                 elif isinstance(m, nn.BatchNorm1d):
                     m.weight.data.fill_(1)
                     m.bias.data.zero_()
@@ -207,10 +207,13 @@ typedef struct fc_param {
         torch.onnx.export(self, dummy_input, filename, input_names=input_names, output_names=output_names)
 
 if __name__ == '__main__':
+    torch.set_grad_enabled(False)
+
     # init and load net
     net = SimpleCLS()
     state_dict = torch.load('./weights/face_binary_cls.pth')
     net.load_state_dict(state_dict)
+    net.eval()
 
     # port to cpp
     net.port2cpp('./weights/face_binary_cls.cpp')
