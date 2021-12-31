@@ -23,6 +23,7 @@ args = parser.parse_args()
 
 # read image
 img = cv2.imread(args.img)
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 with torch.no_grad():
     out = net(T.ToTensor()(img).unsqueeze(0))
     conf_scores = out.squeeze(0).data.numpy()
